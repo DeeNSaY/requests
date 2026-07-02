@@ -28,7 +28,10 @@ def test_list_active_users_should_not_return_deactivated_users():
 
 
 def test_change_status_should_store_requested_status():
-    ticket_service = TicketService(TicketRepository())
+    user_repository = UserRepository()
+    user_service = UserService(user_repository)
+    user = user_service.create_user("Test User", "test@example.com")
+    ticket_service = TicketService(TicketRepository(), user_repository)
     ticket = ticket_service.create_ticket(
         title="Status check",
         description="The ticket status should be changed.",
