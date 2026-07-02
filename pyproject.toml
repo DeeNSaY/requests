@@ -1,0 +1,9 @@
+[project]
+name = "user-requests-system"
+version = "0.2.0"
+description = "Учебный проект для интеграции модулей Пользователи и Заявки"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

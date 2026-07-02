@@ -1,0 +1,89 @@
+@startuml
+title Информационная система учета заявок пользователей
+
+package "models" {
+  class User {
+    +id: int
+    +full_name: str
+    +email: str
+    +is_active: bool
+  }
+
+  class Ticket {
+    +id: int
+    +title: str
+    +description: str
+    +created_by_user_id: int
+    +status: TicketStatus
+  }
+
+  enum TicketStatus {
+    OPEN
+    IN_PROGRESS
+    CLOSED
+  }
+}
+
+package "repositories" {
+  class UserRepository {
+    +add(full_name, email): User
+    +get_by_id(user_id): User
+    +get_all(): list<User>
+    +find_by_email(email): User
+    +deactivate(user_id): User
+  }
+
+  class TicketRepository {
+    +add(title, description, created_by_user_id): Ticket
+    +get_by_id(ticket_id): Ticket
+    +get_all(): list<Ticket>
+    +list_by_user_id(user_id): list<Ticket>
+    +update_status(ticket_id, status): Ticket
+  }
+}
+
+package "services" {
+  class UserService {
+    +create_user(full_name, email): User
+    +get_user(user_id): User
+    +list_users(): list<User>
+    +list_active_users(): list<User>
+    +deactivate_user(user_id): User
+  }
+
+  class TicketService {
+    +create_ticket(title, description, created_by_user_id): Ticket
+    +get_ticket(ticket_id): Ticket
+    +list_tickets(): list<Ticket>
+    +list_user_tickets(user_id): list<Ticket>
+    +change_status(ticket_id, status): Ticket
+  }
+
+  class ApplicationService {
+    +user_service: UserService
+    +ticket_service: TicketService
+  }
+}
+
+package "interface" {
+  class ConsoleInterface {
+    +run_demo(): None
+  }
+}
+
+UserService --> UserRepository
+TicketService --> TicketRepository
+ApplicationService --> UserService
+ApplicationService --> TicketService
+ConsoleInterface --> UserService
+ConsoleInterface --> TicketService
+Ticket --> TicketStatus
+Ticket --> User : created_by_user_id
+
+note right of TicketService
+  После интеграции TicketService
+  должен проверять существование User
+  перед созданием Ticket.
+end note
+
+@enduml
